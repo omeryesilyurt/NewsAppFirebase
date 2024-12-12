@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">NewsAppFirebase</string>
+    <string name="title_home">Google News</string>
+    <string name="title_search">Search</string>
+    <string name="title_fav">Favorites</string>
+    <string name="btn_general">Genel</string>
+    <string name="btn_sport">Spor</string>
+    <string name="btn_economy">Ekonomi</string>
+    <string name="btn_technology">Teknoloji</string>
+    <string name="text_search_hint">En çok satan sedan otomobiller</string>
+</resources>
