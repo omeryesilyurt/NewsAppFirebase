@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 interface ApiService {
 
-    @GET("getNews?country=tr") // TODO dil bilgisini cihazdan al
+    @GET("getNews?country=tr")
     suspend fun getNewsList(
         @Query("tag") tag: String,
         @Query("paging") paging: Int

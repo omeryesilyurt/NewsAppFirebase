@@ -22,7 +22,7 @@ class HomeFragment : BaseFragment(), AddOrRemoveFavoriteListener {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private val homeViewModel: HomeViewModel by viewModels() // TODO örnek kod
+    private val homeViewModel: HomeViewModel by viewModels()
     private lateinit var pagingAdapter: NewsPagingAdapter
 
 

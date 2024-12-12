@@ -25,6 +25,7 @@ hiltVersion = "2.51.1"
 chucker = "3.5.2"
 pagingVersion = "3.1.1"
 lottieVersion = "6.0.0"
+firebase = "33.7.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -62,6 +63,9 @@ chuckerDebug = { module = "com.github.chuckerteam.chucker:library", version.ref 
 chuckerRelease = { module = "com.github.chuckerteam.chucker:library-no-op", version.ref = "chucker" }
 paging-runtime = { module = "androidx.paging:paging-runtime-ktx", version.ref = "pagingVersion" }
 lottie = { group = "com.airbnb.android", name = "lottie", version.ref = "lottieVersion" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase" }
+firebase-analytics = { module = "com.google.firebase:firebase-analytics" }
+firebase-auth = { module = "com.google.firebase:firebase-auth" }
 
 
 
@@ -73,4 +77,5 @@ jetbrainsKotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "k
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
 navigationSafeArgs = { id = "androidx.navigation.safeargs", version.ref = "safeArgs" }
 ksp = {id = "com.google.devtools.ksp", version.ref ="kspVersion"}
+googleServices = { id = "com.google.gms.google-services", version = "4.4.0" }
 

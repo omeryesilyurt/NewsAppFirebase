@@ -28,7 +28,7 @@ class DetailFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val news = arguments?.getSerializable("selectedNews") as? NewsModel // TODO hatırlat
+        val news = arguments?.getSerializable("selectedNews") as? NewsModel
         binding.tvDetailNewsTitle.text = news?.name
         binding.tvDetailDescription.text = news?.description
         binding.imgDetailNews.setImageResource(R.drawable.news)

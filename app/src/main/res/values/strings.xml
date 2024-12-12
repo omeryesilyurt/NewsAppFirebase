@@ -8,4 +8,7 @@
     <string name="btn_economy">Ekonomi</string>
     <string name="btn_technology">Teknoloji</string>
     <string name="text_search_hint">En çok satan sedan otomobiller</string>
+    <string name="txt_email">E Posta</string>
+    <string name="txt_password">Şifre</string>
+    <string name="txt_btn_login">Giriş</string>
 </resources>
