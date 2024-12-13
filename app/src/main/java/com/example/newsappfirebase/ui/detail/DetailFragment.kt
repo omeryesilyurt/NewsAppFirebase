@@ -40,6 +40,7 @@ class DetailFragment : BaseFragment() {
         }
         binding.toolbar.tvTitle.text = getText(R.string.title_home)
     }
+    
 
     private fun loadImage(newsItem: NewsModel, imageView: AppCompatImageView) {
         val imageUrl = newsItem.image
