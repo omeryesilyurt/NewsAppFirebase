@@ -1,0 +1,21 @@
+# Gradle ve build ile ilgili dosyalar
+.gradle/
+build/
+
+# Android Studio ile ilgili dosyalar
+.idea/
+*.iml
+
+# Çıktı dosyaları
+*.apk
+*.ap_
+*.db
+*.cxx/
+local.properties
+
+# Log dosyaları
+*.log
+
+# Sistem dosyaları
+.DS_Store
+Thumbs.db
