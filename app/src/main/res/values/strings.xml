@@ -11,4 +11,14 @@
     <string name="txt_email">E Posta</string>
     <string name="txt_password">Şifre</string>
     <string name="txt_btn_login">Giriş</string>
+    <string name="txt_register">Hesabın yok mu ? Kaydol</string>
+    <string name="title_register">Kaydol</string>
+    <string name="rgt_successful">Kayıt Başarılı</string>
+    <string name="rgt_failed">Kayıt Başarısız.</string>
+    <string name="login_failed">Email veya şifre hatalı</string>
+    <string name="txt_repeat_password">Lütfen şifrenizi tekrar giriniz</string>
+    <string name="txt_enter_email">Lütfen mail adresinizi giriniz</string>
+    <string name="txt_enter_password">Lütfen mail adresinizi giriniz</string>
+    <string name="txt_enter_proper_password">Lütfen 6 veya daha fazla haneli bir şifre giriniz</string>
+    <string name="txt_enter_same_password">Girdiğiniz şifreler aynı olmalı</string>
 </resources>

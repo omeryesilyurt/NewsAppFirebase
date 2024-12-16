@@ -6,6 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
     alias(libs.plugins.navigationSafeArgs)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.googleServices)
     id ("dagger.hilt.android.plugin")
 }
 
