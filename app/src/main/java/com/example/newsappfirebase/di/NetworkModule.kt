@@ -4,8 +4,11 @@ import android.content.Context
 import com.chuckerteam.chucker.BuildConfig
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.example.newsappfirebase.network.ApiService
+import com.example.newsappfirebase.repository.FirebaseRepository
 import com.example.newsappfirebase.repository.LocalRepository
 import com.example.newsappfirebase.utils.Constants
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -72,4 +75,21 @@ object NetworkModule {
         return LocalRepository(context)
     }
 
+    @Singleton
+    @Provides
+    fun provideFirebaseFirestore():FirebaseFirestore = FirebaseFirestore.getInstance()
+
+
+    @Singleton
+    @Provides
+    fun provideFirebaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
+
+    @Singleton
+    @Provides
+    fun provideFirebaseRepository(
+        firestore: FirebaseFirestore,
+        auth: FirebaseAuth
+    ): FirebaseRepository {
+        return FirebaseRepository(firestore, auth)
+    }
 }
