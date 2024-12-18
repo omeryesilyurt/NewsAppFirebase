@@ -4,12 +4,14 @@ import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.newsappfirebase.model.NewsModel
 import com.example.newsappfirebase.network.ApiService
-import com.example.newsappfirebase.repository.LocalRepository
+import com.example.newsappfirebase.repository.FirebaseRepository
+import kotlinx.coroutines.tasks.await
+import java.util.UUID
 
 class NewsPagingSource(
+    private val firebaseRepository: FirebaseRepository,
     private val apiService: ApiService,
     private val category: String,
-    private val localRepository: LocalRepository,
     private val query: String? = null,
     private val isFavoritesMode: Boolean = false
 ) :
@@ -19,17 +21,17 @@ class NewsPagingSource(
         val closestPage = state.closestPageToPosition(anchorPosition)
         return closestPage?.prevKey?.plus(1) ?: closestPage?.nextKey?.minus(1)
     }
-    private var hasLoadedFavorites = false
 
+
+    // TODO HABERLER FAVORİ OLARAK KAYDEDİLİYOR AMA FAVORİ OLARAK LİSTELENMİYOR
+    // TODO PAGINGSOURCE KISMINDA FAVORI GET ISLEMI KONTROL EDILMELI
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, NewsModel> {
         val page = params.key ?: 1
         return try {
-            val newsList: List<NewsModel> = if (isFavoritesMode && !hasLoadedFavorites) {
-                hasLoadedFavorites = true
-                localRepository.getFavoriteList() ?: emptyList()
+            val newsList: List<NewsModel> = if (isFavoritesMode) {
+                fetchFavoritesFromFirebase()
             } else {
                 val response = apiService.getNewsList(tag = category, paging = page)
-                response.body()?.result ?: emptyList()
                 val fetchedList = response.body()?.result ?: emptyList()
 
                 if (!query.isNullOrEmpty()) {
@@ -39,9 +41,9 @@ class NewsPagingSource(
                 }
             }
 
-            val favoriteNews = localRepository.getFavoriteList()
+            val favoriteNews = fetchFavoritesFromFirebase()
             newsList.forEach { news ->
-                news.isFavorite = favoriteNews?.any { it.name == news.name } == true
+                news.isFavorite = favoriteNews.any { it.name == news.name }
             }
             LoadResult.Page(
                 data = newsList,
@@ -53,6 +55,39 @@ class NewsPagingSource(
         }
     }
 
+    private suspend fun fetchFavoritesFromFirebase(): List<NewsModel> {
+        return try {
+            val favoriteDocuments = firebaseRepository.getFavorites().await()
+            favoriteDocuments.mapNotNull { document ->
+                val newsId = document.getString("newsId")?.let { UUID.fromString(it) }
+                val id = document.getString("id") ?: return@mapNotNull null
+                val key = document.getString("key")
+                val url = document.getString("url")
+                val description = document.getString("description")
+                val image = document.getString("image")
+                val name = document.getString("name")
+                val source = document.getString("source")
+
+                if (newsId != null) {
+                    NewsModel(
+                        newsId = newsId,
+                        id = id,
+                        key = key,
+                        url = url,
+                        description = description,
+                        image = image,
+                        name = name,
+                        source = source,
+                        isFavorite = true
+                    )
+                } else {
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
 
     companion object {
         const val PAGINATION_LIMIT = 4

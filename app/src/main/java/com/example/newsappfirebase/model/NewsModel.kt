@@ -9,12 +9,12 @@ import java.io.Serializable
 import java.util.UUID
 
 @Entity(tableName = "dbNews",indices = [Index(value = ["newsId"], unique = true)])
-data class NewsModel (
+data class NewsModel(
     @PrimaryKey
     var newsId: UUID,
 
     @ColumnInfo(name = "id")
-    val id: Long ,
+    var id: String,
 
     @SerializedName("key")
     @ColumnInfo(name = "key")

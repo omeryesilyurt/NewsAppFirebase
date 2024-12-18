@@ -10,7 +10,9 @@ import androidx.paging.cachedIn
 import com.example.newsappfirebase.model.NewsModel
 import com.example.newsappfirebase.network.ApiService
 import com.example.newsappfirebase.paging.NewsPagingSource
+import com.example.newsappfirebase.repository.FirebaseRepository
 import com.example.newsappfirebase.repository.LocalRepository
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -20,8 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val localRepository: LocalRepository,
     private val apiService: ApiService,
+    private val firebaseRepository: FirebaseRepository
 ) :
     ViewModel() {
     var selectedCategory: String? = null
@@ -32,16 +34,16 @@ class HomeViewModel @Inject constructor(
             config = PagingConfig(pageSize = 20),
             pagingSourceFactory = {
                 NewsPagingSource(
+                    firebaseRepository,
                     apiService,
                     category,
-                    localRepository,
                     isFavoritesMode = false
                 )
             }
         ).flow.cachedIn(viewModelScope)
     }
 
-    fun addOrRemove(news: NewsModel, isAdd: Boolean) {
+   /* fun addOrRemove(news: NewsModel, isAdd: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             if (news.newsId == null) {
                 news.newsId = UUID.randomUUID()
@@ -55,6 +57,37 @@ class HomeViewModel @Inject constructor(
                 localRepository.remove(news)
             }
         }
+    }*/
+
+    fun addOrRemove(news: NewsModel, isAdd: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val userEmail = FirebaseAuth.getInstance().currentUser?.email
+            if (news.newsId == null) {
+                news.newsId = UUID.randomUUID()
+            }
+
+            val newsData = mapOf(
+                "newsId" to news.newsId.toString(),
+                "id" to news.id,
+                "name" to news.name,
+                "description" to news.description,
+                "image" to news.image,
+                "source" to news.source,
+                "url" to news.url,
+                "email" to userEmail
+            )
+
+            try {
+                if (isAdd) {
+                    firebaseRepository.addToFavorites(news.newsId.toString(), newsData)
+                } else {
+                    firebaseRepository.removeFromFavorites(news.newsId.toString())
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
     }
+
 
 }
