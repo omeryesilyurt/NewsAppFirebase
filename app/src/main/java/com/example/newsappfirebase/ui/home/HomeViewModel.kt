@@ -11,7 +11,6 @@ import com.example.newsappfirebase.model.NewsModel
 import com.example.newsappfirebase.network.ApiService
 import com.example.newsappfirebase.paging.NewsPagingSource
 import com.example.newsappfirebase.repository.FirebaseRepository
-import com.example.newsappfirebase.repository.LocalRepository
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -42,22 +41,6 @@ class HomeViewModel @Inject constructor(
             }
         ).flow.cachedIn(viewModelScope)
     }
-
-   /* fun addOrRemove(news: NewsModel, isAdd: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (news.newsId == null) {
-                news.newsId = UUID.randomUUID()
-            }
-            if (isAdd) {
-                news.isFavorite = true
-                news.addedAt = System.currentTimeMillis()
-                localRepository.add(news)
-            } else {
-                news.isFavorite = false
-                localRepository.remove(news)
-            }
-        }
-    }*/
 
     fun addOrRemove(news: NewsModel, isAdd: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {

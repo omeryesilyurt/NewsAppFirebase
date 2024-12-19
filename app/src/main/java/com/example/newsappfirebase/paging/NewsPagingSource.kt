@@ -1,10 +1,12 @@
 package com.example.newsappfirebase.paging
 
+import android.util.Log
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.example.newsappfirebase.model.NewsModel
 import com.example.newsappfirebase.network.ApiService
 import com.example.newsappfirebase.repository.FirebaseRepository
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.tasks.await
 import java.util.UUID
 
@@ -22,9 +24,6 @@ class NewsPagingSource(
         return closestPage?.prevKey?.plus(1) ?: closestPage?.nextKey?.minus(1)
     }
 
-
-    // TODO HABERLER FAVORİ OLARAK KAYDEDİLİYOR AMA FAVORİ OLARAK LİSTELENMİYOR
-    // TODO PAGINGSOURCE KISMINDA FAVORI GET ISLEMI KONTROL EDILMELI
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, NewsModel> {
         val page = params.key ?: 1
         return try {
@@ -56,9 +55,12 @@ class NewsPagingSource(
     }
 
     private suspend fun fetchFavoritesFromFirebase(): List<NewsModel> {
+        val userEmail = FirebaseAuth.getInstance().currentUser?.email
         return try {
             val favoriteDocuments = firebaseRepository.getFavorites().await()
-            favoriteDocuments.mapNotNull { document ->
+            favoriteDocuments.filter { document ->
+                document.getString("email") == userEmail
+            }.mapNotNull { document ->
                 val newsId = document.getString("newsId")?.let { UUID.fromString(it) }
                 val id = document.getString("id") ?: return@mapNotNull null
                 val key = document.getString("key")

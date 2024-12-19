@@ -5,7 +5,6 @@ import com.chuckerteam.chucker.BuildConfig
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.example.newsappfirebase.network.ApiService
 import com.example.newsappfirebase.repository.FirebaseRepository
-import com.example.newsappfirebase.repository.LocalRepository
 import com.example.newsappfirebase.utils.Constants
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -69,11 +68,6 @@ object NetworkModule {
     @Singleton
     fun provideGson(): Gson = GsonBuilder().setLenient().create()
 
-    @Singleton
-    @Provides
-    fun provideLocalRepository(@ApplicationContext context: Context): LocalRepository {
-        return LocalRepository(context)
-    }
 
     @Singleton
     @Provides

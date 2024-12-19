@@ -11,7 +11,6 @@ import com.example.newsappfirebase.model.NewsModel
 import com.example.newsappfirebase.network.ApiService
 import com.example.newsappfirebase.paging.NewsPagingSource
 import com.example.newsappfirebase.repository.FirebaseRepository
-import com.example.newsappfirebase.repository.LocalRepository
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -25,7 +24,6 @@ import javax.inject.Inject
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
     private val firebaseRepository: FirebaseRepository,
-    private val localRepository: LocalRepository,
     private val apiService: ApiService
 ) : ViewModel() {
 
@@ -45,24 +43,6 @@ class FavoritesViewModel @Inject constructor(
         ).flow.cachedIn(viewModelScope)
     }
 
-/*    fun addOrRemove(news: NewsModel, isAdd: Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (news.newsId == null) {
-                news.newsId = UUID.randomUUID()
-            }
-            if (isAdd) {
-                news.isFavorite = true
-                news.addedAt = System.currentTimeMillis()
-                localRepository.add(news)
-            } else {
-                news.isFavorite = false
-                localRepository.remove(news)
-            }
-            eventFetchNews.postValue(localRepository.getFavoriteList())
-
-        }
-    }*/
-
     fun addOrRemove(news: NewsModel, isAdd: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             val userEmail = FirebaseAuth.getInstance().currentUser?.email
@@ -71,7 +51,7 @@ class FavoritesViewModel @Inject constructor(
             }
             val newsData = mapOf(
                 "newsId" to news.newsId.toString(),
-                "id" to news.id.toString(),
+                "id" to news.id,
                 "name" to news.name,
                 "description" to news.description,
                 "image" to news.image,
