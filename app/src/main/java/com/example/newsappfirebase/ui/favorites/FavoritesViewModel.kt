@@ -23,21 +23,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FavoritesViewModel @Inject constructor(
-    private val firebaseRepository: FirebaseRepository,
-    private val apiService: ApiService
+    private val firebaseRepository: FirebaseRepository
 ) : ViewModel() {
-
-    val eventFetchNews = MutableLiveData<List<NewsModel>?>()
 
     fun getFavoriteNews(): Flow<PagingData<NewsModel>> {
         return Pager(
-            config = PagingConfig(pageSize = 20),
+            config = PagingConfig(pageSize = 10),
             pagingSourceFactory = {
                 NewsPagingSource(
-                    firebaseRepository,
-                    apiService,
-                    category = "favorites",
-                    isFavoritesMode = true
+                    firebaseRepository
                 )
             }
         ).flow.cachedIn(viewModelScope)
@@ -60,34 +54,18 @@ class FavoritesViewModel @Inject constructor(
                 "email" to userEmail
             )
             try {
-                if (isAdd) {
+               /* if (isAdd) {
                     firebaseRepository.addToFavorites(news.newsId.toString(), newsData)
                 } else {
                     firebaseRepository.removeFromFavorites(news.newsId.toString())
-                }
-                val updatedFavorites = fetchFavoritesFromFirebase()
-                eventFetchNews.postValue(updatedFavorites)
+                }*/
+                /* val updatedFavorites = fetchFavoritesFromFirebase()
+                 eventFetchNews.postValue(updatedFavorites)*/
             } catch (e: Exception) {
                 e.printStackTrace()
 
             }
         }
     }
-
-    private suspend fun fetchFavoritesFromFirebase(): List<NewsModel> {
-        return try {
-            val favoriteDocuments = firebaseRepository.getFavorites().await()
-            favoriteDocuments.mapNotNull { document ->
-                document.toObject(NewsModel::class.java)?.apply {
-                    this.id = document.getString("id").toString()
-                    this.newsId = UUID.fromString(document.getString("newsId"))
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            emptyList()
-        }
-    }
-
 
 }

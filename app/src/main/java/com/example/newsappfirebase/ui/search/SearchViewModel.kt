@@ -24,7 +24,7 @@ class SearchViewModel @Inject constructor(
     fun searchPagingData(query: String?,category: String): LiveData<PagingData<NewsModel>> {
         return Pager(
             config = PagingConfig(pageSize = 20),
-            pagingSourceFactory = { NewsPagingSource(firebaseRepository ,apiService, category, query) }
+            pagingSourceFactory = { NewsPagingSource(firebaseRepository) }
         ).liveData.cachedIn(viewModelScope)
     }
 

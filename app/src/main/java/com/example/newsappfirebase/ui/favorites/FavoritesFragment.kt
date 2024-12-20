@@ -23,6 +23,7 @@ class FavoritesFragment : BaseFragment(), AddOrRemoveFavoriteListener {
     private val binding get() = _binding!!
     private val favoriteViewModel: FavoritesViewModel by viewModels()
     private lateinit var favoriteListAdapter: NewsPagingAdapter
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,15 +41,7 @@ class FavoritesFragment : BaseFragment(), AddOrRemoveFavoriteListener {
             })
         binding.toolbar.tvTitle.text = getText(R.string.title_fav)
         binding.rvFavNews.adapter = favoriteListAdapter
-        getFavorites()
-
-        favoriteViewModel.eventFetchNews.observe(viewLifecycleOwner) {
-            it?.let { list ->
-                lifecycleScope.launch {
-                    favoriteListAdapter.submitData(PagingData.from(list))
-                }
-            }
-        }
+        setupObservers()
     }
 
     override fun onDestroyView() {
@@ -56,16 +49,11 @@ class FavoritesFragment : BaseFragment(), AddOrRemoveFavoriteListener {
         _binding = null
     }
 
-    override fun onResume() {
-        super.onResume()
-        getFavorites()
-    }
-
     override fun onAddOrRemoveFavorite(news: NewsModel, isAdd: Boolean) {
         favoriteViewModel.addOrRemove(news, isAdd)
     }
 
-    private fun getFavorites() {
+   private fun setupObservers() {
         lifecycleScope.launch {
             favoriteViewModel.getFavoriteNews().collectLatest { pagingData ->
                 favoriteListAdapter.submitData(pagingData)

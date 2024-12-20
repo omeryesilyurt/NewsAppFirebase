@@ -33,10 +33,7 @@ class HomeViewModel @Inject constructor(
             config = PagingConfig(pageSize = 20),
             pagingSourceFactory = {
                 NewsPagingSource(
-                    firebaseRepository,
-                    apiService,
-                    category,
-                    isFavoritesMode = false
+                    firebaseRepository
                 )
             }
         ).flow.cachedIn(viewModelScope)
@@ -61,11 +58,11 @@ class HomeViewModel @Inject constructor(
             )
 
             try {
-                if (isAdd) {
+              /*  if (isAdd) {
                     firebaseRepository.addToFavorites(news.newsId.toString(), newsData)
                 } else {
                     firebaseRepository.removeFromFavorites(news.newsId.toString())
-                }
+                }*/
             } catch (e: Exception) {
                 e.printStackTrace()
             }
