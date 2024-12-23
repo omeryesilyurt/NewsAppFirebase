@@ -34,7 +34,6 @@ class FavoritesAdapter @Inject constructor(
     inner class FavoritesViewHolder(private val binding: ItemNewsBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(news: NewsModel) {
-            binding.root
             binding.apply {
                 tvNewsTitle.text = news.name
                 tvTitle.text = news.source

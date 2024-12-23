@@ -52,7 +52,7 @@ class FavoritesFragment : BaseFragment(), AddOrRemoveFavoriteListener {
     private fun setupObservers() {
         lifecycleScope.launch {
             val favorites = favoriteViewModel.fetchFavoritesFromFirebase()
-            favoritesAdapter.submitList(favorites)
+            favoritesAdapter.submitList(favorites.map { it.copy(isFavorite = true) })
         }
     }
 }

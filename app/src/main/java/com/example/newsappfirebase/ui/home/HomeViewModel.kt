@@ -34,6 +34,7 @@ class HomeViewModel @Inject constructor(
             pagingSourceFactory = {
                 NewsPagingSource(
                     remoteRepository,
+                    firebaseRepository,
                     category
                 )
             }
@@ -46,6 +47,7 @@ class HomeViewModel @Inject constructor(
             if (news.newsId == null) {
                 news.newsId = UUID.randomUUID().toString()
             }
+
 
             val newsData = mapOf(
                 "newsId" to news.newsId,
