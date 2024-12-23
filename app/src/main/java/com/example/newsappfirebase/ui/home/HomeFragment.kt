@@ -38,10 +38,10 @@ class HomeFragment : BaseFragment(), AddOrRemoveFavoriteListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.toolbar.tvTitle.text = getText(R.string.title_home)
-       /* pagingAdapter = NewsPagingAdapter(
+        pagingAdapter = NewsPagingAdapter(
             onItemClick = { newsItem ->
                 if (newsItem.newsId == null) {
-                    newsItem.newsId = UUID.randomUUID()
+                    newsItem.newsId = UUID.randomUUID().toString()
                 }
                 val action = HomeFragmentDirections.actionHomeFragmentToDetailFragment()
                 val bundle = Bundle().apply {
@@ -52,11 +52,11 @@ class HomeFragment : BaseFragment(), AddOrRemoveFavoriteListener {
             addOrRemoveFavoriteListener = { newsItem, isFavorite ->
                 homeViewModel.addOrRemove(newsItem, isFavorite)
             }
-        )*/
-       // binding.rvNews.adapter = pagingAdapter
-        // showLoadingOnce(binding.lottieLoading)
-        //updateNews("general")
-        //clickEvents()
+        )
+        binding.rvNews.adapter = pagingAdapter
+        showLoadingOnce(binding.lottieLoading)
+        updateNews("general")
+        clickEvents()
     }
 
     private fun clickEvents() {
@@ -116,7 +116,7 @@ class HomeFragment : BaseFragment(), AddOrRemoveFavoriteListener {
     private fun updateNews(category: String) {
         lifecycleScope.launch {
             homeViewModel.getNews(category).collectLatest { pagingData ->
-               // pagingAdapter.submitData(pagingData)
+                pagingAdapter.submitData(pagingData)
             }
         }
     }

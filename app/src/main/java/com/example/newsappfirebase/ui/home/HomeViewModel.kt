@@ -8,9 +8,9 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.newsappfirebase.model.NewsModel
-import com.example.newsappfirebase.network.ApiService
 import com.example.newsappfirebase.paging.NewsPagingSource
 import com.example.newsappfirebase.repository.FirebaseRepository
+import com.example.newsappfirebase.repository.RemoteRepository
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -21,8 +21,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val apiService: ApiService,
-    private val firebaseRepository: FirebaseRepository
+    private val firebaseRepository: FirebaseRepository,
+    private val remoteRepository: RemoteRepository
 ) :
     ViewModel() {
     var selectedCategory: String? = null
@@ -33,7 +33,8 @@ class HomeViewModel @Inject constructor(
             config = PagingConfig(pageSize = 20),
             pagingSourceFactory = {
                 NewsPagingSource(
-                    firebaseRepository
+                    remoteRepository,
+                    category
                 )
             }
         ).flow.cachedIn(viewModelScope)
@@ -43,11 +44,11 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             val userEmail = FirebaseAuth.getInstance().currentUser?.email
             if (news.newsId == null) {
-                news.newsId = UUID.randomUUID()
+                news.newsId = UUID.randomUUID().toString()
             }
 
             val newsData = mapOf(
-                "newsId" to news.newsId.toString(),
+                "newsId" to news.newsId,
                 "id" to news.id,
                 "name" to news.name,
                 "description" to news.description,
@@ -58,11 +59,11 @@ class HomeViewModel @Inject constructor(
             )
 
             try {
-              /*  if (isAdd) {
-                    firebaseRepository.addToFavorites(news.newsId.toString(), newsData)
+               if (isAdd) {
+                    firebaseRepository.addToFavorites(news.newsId, newsData)
                 } else {
-                    firebaseRepository.removeFromFavorites(news.newsId.toString())
-                }*/
+                    firebaseRepository.removeFromFavorites(news.newsId)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

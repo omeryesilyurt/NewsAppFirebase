@@ -6,15 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.paging.PagingData
 import com.example.newsappfirebase.R
 import com.example.newsappfirebase.databinding.FragmentFavoritesBinding
 import com.example.newsappfirebase.ui.home.AddOrRemoveFavoriteListener
 import com.example.newsappfirebase.model.NewsModel
-import com.example.newsappfirebase.paging.NewsPagingAdapter
 import com.example.newsappfirebase.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -22,7 +19,7 @@ class FavoritesFragment : BaseFragment(), AddOrRemoveFavoriteListener {
     private var _binding: FragmentFavoritesBinding? = null
     private val binding get() = _binding!!
     private val favoriteViewModel: FavoritesViewModel by viewModels()
-    private lateinit var favoriteListAdapter: NewsPagingAdapter
+    private lateinit var favoritesAdapter: FavoritesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,12 +32,11 @@ class FavoritesFragment : BaseFragment(), AddOrRemoveFavoriteListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        favoriteListAdapter =
-            NewsPagingAdapter(addOrRemoveFavoriteListener = { newsItem, isFavorite ->
-                favoriteViewModel.addOrRemove(newsItem, isFavorite)
-            })
+        favoritesAdapter = FavoritesAdapter { news, isFavorite ->
+            favoriteViewModel.addOrRemove(news, isFavorite)
+        }
+        binding.rvFavNews.adapter = favoritesAdapter
         binding.toolbar.tvTitle.text = getText(R.string.title_fav)
-        binding.rvFavNews.adapter = favoriteListAdapter
         setupObservers()
     }
 
@@ -53,11 +49,11 @@ class FavoritesFragment : BaseFragment(), AddOrRemoveFavoriteListener {
         favoriteViewModel.addOrRemove(news, isAdd)
     }
 
-   private fun setupObservers() {
+    private fun setupObservers() {
         lifecycleScope.launch {
-            favoriteViewModel.getFavoriteNews().collectLatest { pagingData ->
-                favoriteListAdapter.submitData(pagingData)
-            }
+            val favorites = favoriteViewModel.fetchFavoritesFromFirebase()
+            favoritesAdapter.submitList(favorites)
         }
     }
 }
+

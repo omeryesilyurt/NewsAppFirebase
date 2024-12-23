@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import com.google.errorprone.annotations.Keep
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 import java.util.UUID
@@ -11,34 +12,34 @@ import java.util.UUID
 @Entity(tableName = "dbNews",indices = [Index(value = ["newsId"], unique = true)])
 data class NewsModel(
     @PrimaryKey
-    var newsId: UUID,
+    var newsId: String = UUID.randomUUID().toString(),
 
     @ColumnInfo(name = "id")
-    var id: String,
+    var id: String= "",
 
     @SerializedName("key")
     @ColumnInfo(name = "key")
-    val key: String?,
+    val key: String?= null,
 
     @SerializedName("url")
     @ColumnInfo(name = "url")
-    val url: String?,
+    val url: String?= null,
 
     @SerializedName("description")
     @ColumnInfo(name = "description")
-    val description: String?,
+    val description: String?= null,
 
     @SerializedName("image")
     @ColumnInfo(name = "image")
-    val image: String?,
+    val image: String?= null,
 
     @SerializedName("name")
     @ColumnInfo(name = "name")
-    val name: String?,
+    val name: String?= null,
 
     @SerializedName("source")
     @ColumnInfo(name = "source")
-    val source: String?,
+    val source: String?= null,
 
     @ColumnInfo(name = "is_favorite")
     var isFavorite: Boolean? = false,
@@ -46,4 +47,17 @@ data class NewsModel(
     @SerializedName("addedAt")
     @ColumnInfo(name = "addedAt")
     var addedAt:Long = System.currentTimeMillis()
-): Serializable
+): Serializable{
+    constructor() : this(
+        newsId = UUID.randomUUID().toString(),
+        id = "",
+        key = null,
+        url = null,
+        description = null,
+        image = null,
+        name = null,
+        source = null,
+        isFavorite = false,
+        addedAt = System.currentTimeMillis()
+    )
+}
