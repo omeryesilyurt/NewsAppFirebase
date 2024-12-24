@@ -15,6 +15,7 @@ import com.example.newsappfirebase.R
 import com.example.newsappfirebase.databinding.FragmentLoginBinding
 import com.example.newsappfirebase.ui.base.BaseFragment
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 
 class LoginFragment : BaseFragment() {
     private var _binding: FragmentLoginBinding? = null
@@ -111,12 +112,21 @@ class LoginFragment : BaseFragment() {
                 FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(requireActivity()) { task ->
                         if (task.isSuccessful) {
-                            Toast.makeText(
-                                requireActivity(),
-                                getText(R.string.rgt_successful),
-                                Toast.LENGTH_SHORT
-                            ).show()
-                            registerLayout.visibility = View.GONE
+                            addUserToFirestore(email) { isSuccess, exception ->
+                                if (isSuccess) {
+                                    Toast.makeText(
+                                        requireActivity(),
+                                        getText(R.string.rgt_successful),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                    registerLayout.visibility = View.GONE
+                                } else {
+                                    val errorMessage =
+                                        exception?.message ?: getText(R.string.rgt_failed)
+                                    Toast.makeText(requireActivity(), errorMessage, Toast.LENGTH_LONG)
+                                        .show()
+                                }
+                            }
                         } else {
                             val errorMessage =
                                 task.exception?.message ?: getText(R.string.rgt_failed)
@@ -147,6 +157,24 @@ class LoginFragment : BaseFragment() {
             }
 
         }
+    }
+
+    private fun addUserToFirestore(email: String, onResult: (Boolean, Exception?) -> Unit) {
+        val userDoc = FirebaseFirestore.getInstance()
+            .collection("users")
+            .document(email)
+
+        val userData = hashMapOf(
+            "email" to email
+        )
+
+        userDoc.set(userData)
+            .addOnSuccessListener {
+                onResult(true, null)
+            }
+            .addOnFailureListener { exception ->
+                onResult(false, exception)
+            }
     }
 
     override fun onDestroyView() {
