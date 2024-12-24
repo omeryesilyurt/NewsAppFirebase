@@ -11,6 +11,7 @@ import com.example.newsappfirebase.model.NewsModel
 import com.example.newsappfirebase.paging.NewsPagingSource
 import com.example.newsappfirebase.repository.FirebaseRepository
 import com.example.newsappfirebase.repository.RemoteRepository
+import com.example.newsappfirebase.utils.FavoritesMapper
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -44,27 +45,12 @@ class HomeViewModel @Inject constructor(
     fun addOrRemove(news: NewsModel, isAdd: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             val userEmail = FirebaseAuth.getInstance().currentUser?.email
-            if (news.newsId == null) {
-                news.newsId = UUID.randomUUID().toString()
-            }
-
-
-            val newsData = mapOf(
-                "newsId" to news.newsId,
-                "id" to news.id,
-                "name" to news.name,
-                "description" to news.description,
-                "image" to news.image,
-                "source" to news.source,
-                "url" to news.url,
-                "email" to userEmail
-            )
-
+            val newsData = FavoritesMapper.toMap(news,userEmail)
             try {
                if (isAdd) {
-                    firebaseRepository.addToFavorites(news.newsId, newsData)
+                   news.name?.let { firebaseRepository.addToFavorites(it, newsData) }
                 } else {
-                    firebaseRepository.removeFromFavorites(news.newsId)
+                   news.name?.let { firebaseRepository.removeFromFavorites(it) }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

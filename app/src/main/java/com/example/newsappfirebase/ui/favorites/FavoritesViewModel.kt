@@ -1,9 +1,12 @@
 package com.example.newsappfirebase.ui.favorites
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.newsappfirebase.model.NewsModel
 import com.example.newsappfirebase.repository.FirebaseRepository
+import com.example.newsappfirebase.utils.FavoritesMapper
 import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,29 +22,20 @@ import kotlin.coroutines.suspendCoroutine
 class FavoritesViewModel @Inject constructor(
     private val firebaseRepository: FirebaseRepository
 ) : ViewModel() {
+    private val _favoritesList = MutableLiveData<List<NewsModel>>()
+    val favoritesList: LiveData<List<NewsModel>> get() = _favoritesList
 
     fun addOrRemove(news: NewsModel, isAdd: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             val userEmail = FirebaseAuth.getInstance().currentUser?.email
-            if (news.newsId == null) {
-                news.newsId = UUID.randomUUID().toString()
-            }
-            val newsData = mapOf(
-                "newsId" to news.newsId,
-                "id" to news.id,
-                "name" to news.name,
-                "description" to news.description,
-                "image" to news.image,
-                "source" to news.source,
-                "url" to news.url,
-                "email" to userEmail
-            )
+            val newsData = FavoritesMapper.toMap(news,userEmail)
             try {
                 if (isAdd) {
-                    firebaseRepository.addToFavorites(news.newsId, newsData)
+                    news.name?.let { firebaseRepository.addToFavorites(it, newsData) }
                 } else {
-                    firebaseRepository.removeFromFavorites(news.newsId)
+                    news.name?.let { firebaseRepository.removeFromFavorites(it) }
                 }
+                fetchFavoritesFromFirebase()
             } catch (e: Exception) {
                 e.printStackTrace()
 
@@ -49,9 +43,9 @@ class FavoritesViewModel @Inject constructor(
         }
     }
 
-    suspend fun fetchFavoritesFromFirebase(): List<NewsModel> {
-        return withContext(Dispatchers.IO) {
-            suspendCoroutine<List<NewsModel>> { continuation ->
+    fun fetchFavoritesFromFirebase() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val favorites = suspendCoroutine<List<NewsModel>> { continuation ->
                 firebaseRepository.getFavorites { documents, exception ->
                     if (exception == null && documents != null) {
                         val result = documents.mapNotNull { doc ->
@@ -67,6 +61,7 @@ class FavoritesViewModel @Inject constructor(
                     }
                 }
             }
+            _favoritesList.postValue(favorites.map { it.copy(isFavorite = true) })
         }
     }
 

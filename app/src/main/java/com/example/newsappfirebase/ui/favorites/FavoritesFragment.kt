@@ -13,6 +13,7 @@ import com.example.newsappfirebase.model.NewsModel
 import com.example.newsappfirebase.ui.base.BaseFragment
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.text.FieldPosition
 
 @AndroidEntryPoint
 class FavoritesFragment : BaseFragment(), AddOrRemoveFavoriteListener {
@@ -38,6 +39,7 @@ class FavoritesFragment : BaseFragment(), AddOrRemoveFavoriteListener {
         binding.rvFavNews.adapter = favoritesAdapter
         binding.toolbar.tvTitle.text = getText(R.string.title_fav)
         setupObservers()
+        favoriteViewModel.fetchFavoritesFromFirebase()
     }
 
     override fun onDestroyView() {
@@ -50,9 +52,8 @@ class FavoritesFragment : BaseFragment(), AddOrRemoveFavoriteListener {
     }
 
     private fun setupObservers() {
-        lifecycleScope.launch {
-            val favorites = favoriteViewModel.fetchFavoritesFromFirebase()
-            favoritesAdapter.submitList(favorites.map { it.copy(isFavorite = true) })
+        favoriteViewModel.favoritesList.observe(viewLifecycleOwner) { favorites ->
+            favoritesAdapter.submitList(favorites)
         }
     }
 }

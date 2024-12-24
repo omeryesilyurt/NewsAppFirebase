@@ -9,6 +9,7 @@ import com.bumptech.glide.Glide
 import com.example.newsappfirebase.R
 import com.example.newsappfirebase.databinding.ItemNewsBinding
 import com.example.newsappfirebase.model.NewsModel
+import java.text.FieldPosition
 import javax.inject.Inject
 
 class FavoritesAdapter @Inject constructor(
@@ -24,7 +25,6 @@ class FavoritesAdapter @Inject constructor(
     override fun onBindViewHolder(holder: FavoritesViewHolder, position: Int) {
         val newsItem = newsList[position]
         holder.bind(newsItem)
-        holder.apply { }
     }
 
     override fun getItemCount(): Int {
