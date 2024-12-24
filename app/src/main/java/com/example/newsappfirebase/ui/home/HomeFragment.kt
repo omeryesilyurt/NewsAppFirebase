@@ -40,8 +40,8 @@ class HomeFragment : BaseFragment(), AddOrRemoveFavoriteListener {
         binding.toolbar.tvTitle.text = getText(R.string.title_home)
         pagingAdapter = NewsPagingAdapter(
             onItemClick = { newsItem ->
-                if (newsItem.newsId == null) {
-                    newsItem.newsId = UUID.randomUUID().toString()
+                if (newsItem.id == null) {
+                    newsItem.id = UUID.randomUUID().toString()
                 }
                 val action = HomeFragmentDirections.actionHomeFragmentToDetailFragment()
                 val bundle = Bundle().apply {

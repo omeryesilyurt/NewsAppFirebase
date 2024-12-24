@@ -43,10 +43,17 @@ class FavoritesViewModel @Inject constructor(
         }
     }
 
+
     fun fetchFavoritesFromFirebase() {
         viewModelScope.launch(Dispatchers.IO) {
+            val userEmail = FirebaseAuth.getInstance().currentUser?.email
+            if (userEmail == null) {
+                _favoritesList.postValue(emptyList())
+                return@launch
+            }
+
             val favorites = suspendCoroutine<List<NewsModel>> { continuation ->
-                firebaseRepository.getFavorites { documents, exception ->
+                firebaseRepository.getFavoritesByEmail(userEmail) { documents, exception ->
                     if (exception == null && documents != null) {
                         val result = documents.mapNotNull { doc ->
                             try {
@@ -61,9 +68,11 @@ class FavoritesViewModel @Inject constructor(
                     }
                 }
             }
+
             _favoritesList.postValue(favorites.map { it.copy(isFavorite = true) })
         }
     }
+
 
 
 }

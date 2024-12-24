@@ -28,7 +28,6 @@ class HomeViewModel @Inject constructor(
     ViewModel() {
     var selectedCategory: String? = null
 
-
     fun getNews(category: String): Flow<PagingData<NewsModel>> {
         return Pager(
             config = PagingConfig(pageSize = 20),

@@ -4,18 +4,14 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.google.errorprone.annotations.Keep
 import com.google.gson.annotations.SerializedName
 import java.io.Serializable
 import java.util.UUID
 
-@Entity(tableName = "dbNews",indices = [Index(value = ["newsId"], unique = true)])
+@Entity(tableName = "dbNews",indices = [Index(value = ["id"], unique = true)])
 data class NewsModel(
     @PrimaryKey
-    var newsId: String = UUID.randomUUID().toString(),
-
-    @ColumnInfo(name = "id")
-    var id: String= "",
+    var id: String = UUID.randomUUID().toString(),
 
     @SerializedName("key")
     @ColumnInfo(name = "key")
@@ -46,11 +42,14 @@ data class NewsModel(
 
     @SerializedName("addedAt")
     @ColumnInfo(name = "addedAt")
-    var addedAt:Long = System.currentTimeMillis()
+    var addedAt:Long = System.currentTimeMillis(),
+
+    @SerializedName("email")
+    @ColumnInfo(name ="email")
+    var email:String? = null
 ): Serializable{
     constructor() : this(
-        newsId = UUID.randomUUID().toString(),
-        id = "",
+        id = UUID.randomUUID().toString(),
         key = null,
         url = null,
         description = null,
@@ -58,6 +57,7 @@ data class NewsModel(
         name = null,
         source = null,
         isFavorite = false,
-        addedAt = System.currentTimeMillis()
+        addedAt = System.currentTimeMillis(),
+        email = null
     )
 }

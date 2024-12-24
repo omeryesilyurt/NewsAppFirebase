@@ -19,10 +19,21 @@ class FirebaseRepository() {
             }
     }
 
+    fun getFavoritesByEmail(email: String, onResult: (List<DocumentSnapshot>?, Exception?) -> Unit) {
+        favoritesCollection.whereEqualTo("email", email).get()
+            .addOnSuccessListener { result ->
+                onResult(result.documents, null)
+            }
+            .addOnFailureListener { exception ->
+                onResult(null, exception)
+            }
+    }
 
-    fun addToFavorites(newsId: String, newsData: Map<String, String?>) =
-        favoritesCollection.document(newsId).set(newsData)
 
-    fun removeFromFavorites(newsId: String) =
-        favoritesCollection.document(newsId).delete()
+
+    fun addToFavorites(id: String, newsData: Map<String, String?>) =
+        favoritesCollection.document(id).set(newsData)
+
+    fun removeFromFavorites(id: String) =
+        favoritesCollection.document(id).delete()
 }

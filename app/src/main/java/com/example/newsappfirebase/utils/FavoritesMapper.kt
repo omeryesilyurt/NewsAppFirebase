@@ -6,7 +6,6 @@ object FavoritesMapper {
 
     fun toMap(news: NewsModel, userEmail: String?): Map<String, String?> {
         return mapOf(
-            "newsId" to news.newsId,
             "id" to news.id,
             "name" to news.name,
             "description" to news.description,

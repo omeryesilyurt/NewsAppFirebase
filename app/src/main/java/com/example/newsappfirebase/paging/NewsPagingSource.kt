@@ -6,6 +6,7 @@ import androidx.paging.PagingState
 import com.example.newsappfirebase.model.NewsModel
 import com.example.newsappfirebase.repository.FirebaseRepository
 import com.example.newsappfirebase.repository.RemoteRepository
+import com.google.firebase.auth.FirebaseAuth
 import kotlin.coroutines.suspendCoroutine
 
 class NewsPagingSource(
@@ -36,10 +37,12 @@ class NewsPagingSource(
                                 it.description?.contains(query, ignoreCase = true) == true
                     }
                 }
+                val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
                 val updatedNewsList = newsList.map { news ->
-                    val isFavorite = favNews.any { it.name == news.name }
+                    val isFavorite = favNews.any { it.name == news.name && it.email == currentUserEmail }
                     news.copy(isFavorite = isFavorite)
                 }
+
 
                 LoadResult.Page(
                     data = updatedNewsList,
