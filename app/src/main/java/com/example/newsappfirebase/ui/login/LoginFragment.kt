@@ -13,13 +13,19 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.fragment.findNavController
 import com.example.newsappfirebase.R
 import com.example.newsappfirebase.databinding.FragmentLoginBinding
+import com.example.newsappfirebase.repository.FirebaseRepository
 import com.example.newsappfirebase.ui.base.BaseFragment
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LoginFragment : BaseFragment() {
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
+    @Inject
+    lateinit var firebaseRepository: FirebaseRepository
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -112,7 +118,8 @@ class LoginFragment : BaseFragment() {
                 FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(requireActivity()) { task ->
                         if (task.isSuccessful) {
-                            addUserToFirestore(email) { isSuccess, exception ->
+                            firebaseRepository = FirebaseRepository()
+                            firebaseRepository.initializeUserDocument(email) { isSuccess, exception ->
                                 if (isSuccess) {
                                     Toast.makeText(
                                         requireActivity(),
@@ -123,18 +130,17 @@ class LoginFragment : BaseFragment() {
                                 } else {
                                     val errorMessage =
                                         exception?.message ?: getText(R.string.rgt_failed)
-                                    Toast.makeText(requireActivity(), errorMessage, Toast.LENGTH_LONG)
-                                        .show()
+                                    Toast.makeText(requireActivity(), errorMessage, Toast.LENGTH_LONG).show()
                                 }
                             }
                         } else {
                             val errorMessage =
                                 task.exception?.message ?: getText(R.string.rgt_failed)
-                            Toast.makeText(requireActivity(), errorMessage, Toast.LENGTH_LONG)
-                                .show()
+                            Toast.makeText(requireActivity(), errorMessage, Toast.LENGTH_LONG).show()
                         }
                     }
             }
+
 
             btnLogin.setOnClickListener {
                 val email = edtMail.text.toString()

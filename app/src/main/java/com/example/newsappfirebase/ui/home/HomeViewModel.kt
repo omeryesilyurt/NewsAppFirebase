@@ -47,9 +47,17 @@ class HomeViewModel @Inject constructor(
             val newsData = FavoritesMapper.toMap(news,userEmail)
             try {
                if (isAdd) {
-                   news.name?.let { firebaseRepository.addToFavorites(it, newsData) }
+                   news.name?.let {
+                       if (userEmail != null) {
+                           firebaseRepository.addToFavorites(userEmail,it, newsData)
+                       }
+                   }
                 } else {
-                   news.name?.let { firebaseRepository.removeFromFavorites(it) }
+                   news.name?.let {
+                       if (userEmail != null) {
+                           firebaseRepository.removeFromFavorites(userEmail,it)
+                       }
+                   }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

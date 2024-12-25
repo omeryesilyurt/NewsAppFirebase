@@ -30,10 +30,19 @@ class FavoritesViewModel @Inject constructor(
             val userEmail = FirebaseAuth.getInstance().currentUser?.email
             val newsData = FavoritesMapper.toMap(news,userEmail)
             try {
+                val email = FirebaseAuth.getInstance().currentUser?.email
                 if (isAdd) {
-                    news.name?.let { firebaseRepository.addToFavorites(it, newsData) }
+                    news.name?.let {
+                        if (email != null) {
+                            firebaseRepository.addToFavorites(email,it, newsData)
+                        }
+                    }
                 } else {
-                    news.name?.let { firebaseRepository.removeFromFavorites(it) }
+                    news.name?.let {
+                        if (email != null) {
+                            firebaseRepository.removeFromFavorites(email,it)
+                        }
+                    }
                 }
                 fetchFavoritesFromFirebase()
             } catch (e: Exception) {
