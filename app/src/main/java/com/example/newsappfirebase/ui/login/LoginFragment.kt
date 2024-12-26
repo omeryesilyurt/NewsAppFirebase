@@ -1,5 +1,6 @@
 package com.example.newsappfirebase.ui.login
 
+import android.os.Build
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -7,6 +8,7 @@ import android.text.style.ForegroundColorSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowInsets
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.ContextCompat
@@ -15,6 +17,7 @@ import com.example.newsappfirebase.R
 import com.example.newsappfirebase.databinding.FragmentLoginBinding
 import com.example.newsappfirebase.repository.FirebaseRepository
 import com.example.newsappfirebase.ui.base.BaseFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,11 +60,12 @@ class LoginFragment : BaseFragment() {
                 }
             }
 
-            requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
+            btnBack.setOnClickListener {
                 if (registerLayout.visibility == View.VISIBLE) {
                     registerLayout.visibility = View.GONE
                 }
             }
+
 
             btnRegister.setOnClickListener {
                 val email = edtRgtMail.text.toString().trim()
@@ -183,8 +187,19 @@ class LoginFragment : BaseFragment() {
             }
     }
 
+    override fun onResume() {
+        super.onResume()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            requireActivity().window.insetsController?.hide(WindowInsets.Type.systemBars())
+        }
+
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            requireActivity().window.insetsController?.show(WindowInsets.Type.systemBars())
+        }
         _binding = null
     }
 }
