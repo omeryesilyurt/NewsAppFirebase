@@ -10,17 +10,6 @@ class FirebaseRepository() {
     private fun favoritesCollection(email: String) =
         firestore.collection("users").document(email).collection("favorites")
 
-    fun getFavorites(onResult: (List<DocumentSnapshot>?, Exception?) -> Unit) {
-        firestore.collection("users")
-            .get()
-            .addOnSuccessListener { result ->
-                onResult(result.documents, null)
-            }
-            .addOnFailureListener { exception ->
-                onResult(null, exception)
-            }
-    }
-
     fun getFavoritesByEmail(
         email: String,
         onResult: (List<DocumentSnapshot>?, Exception?) -> Unit

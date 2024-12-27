@@ -44,20 +44,20 @@ class HomeViewModel @Inject constructor(
     fun addOrRemove(news: NewsModel, isAdd: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             val userEmail = FirebaseAuth.getInstance().currentUser?.email
-            val newsData = FavoritesMapper.toMap(news,userEmail)
+            val newsData = FavoritesMapper.toMap(news, userEmail)
             try {
-               if (isAdd) {
-                   news.name?.let {
-                       if (userEmail != null) {
-                           firebaseRepository.addToFavorites(userEmail,it, newsData)
-                       }
-                   }
+                if (isAdd) {
+                    news.name?.let {
+                        if (userEmail != null) {
+                            firebaseRepository.addToFavorites(userEmail, it, newsData)
+                        }
+                    }
                 } else {
-                   news.name?.let {
-                       if (userEmail != null) {
-                           firebaseRepository.removeFromFavorites(userEmail,it)
-                       }
-                   }
+                    news.name?.let {
+                        if (userEmail != null) {
+                            firebaseRepository.removeFromFavorites(userEmail, it)
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()

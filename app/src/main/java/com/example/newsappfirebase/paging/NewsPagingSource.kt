@@ -16,6 +16,7 @@ class NewsPagingSource(
     private val query: String? = null
 ) :
     PagingSource<Int, NewsModel>() {
+    private val currentUserEmail: String? = FirebaseAuth.getInstance().currentUser?.email
 
     override fun getRefreshKey(state: PagingState<Int, NewsModel>): Int? {
         val anchorPosition = state.anchorPosition ?: return null
@@ -37,7 +38,6 @@ class NewsPagingSource(
                                 it.description?.contains(query, ignoreCase = true) == true
                     }
                 }
-                val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
                 val updatedNewsList = newsList.map { news ->
                     val isFavorite = favNews.any { it.name == news.name && it.email == currentUserEmail }
                     news.copy(isFavorite = isFavorite)
@@ -59,14 +59,16 @@ class NewsPagingSource(
 
     private suspend fun getFavoritesSuspend(): List<NewsModel> =
         suspendCoroutine { continuation ->
-            firebaseRepository.getFavorites { documents, exception ->
-                if (exception != null) {
-                    continuation.resumeWith(Result.failure(exception))
-                } else {
-                    val favoriteNewsList = documents?.mapNotNull { document ->
-                        document.toObject(NewsModel::class.java)
-                    } ?: emptyList()
-                    continuation.resumeWith(Result.success(favoriteNewsList))
+            if (currentUserEmail != null) {
+                firebaseRepository.getFavoritesByEmail(currentUserEmail) { documents, exception ->
+                    if (exception != null) {
+                        continuation.resumeWith(Result.failure(exception))
+                    } else {
+                        val favoriteNewsList = documents?.mapNotNull { document ->
+                            document.toObject(NewsModel::class.java)
+                        } ?: emptyList()
+                        continuation.resumeWith(Result.success(favoriteNewsList))
+                    }
                 }
             }
         }
